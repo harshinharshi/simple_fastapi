@@ -1,29 +1,29 @@
-from fastapi import Depends, FastAPI, HTTPException
-from sqlalchemy.orm import Session
-from . import crud, models, schemas
-from .database import SessionLocal, engine
+from fastapi import FastAPI
 
-app = FastAPI()
+# Import the database components
+from app.db.session import engine
+from app.db.session import Base
+# We need to import the model so that SQLAlchemy knows about it
+from app.models import item
 
-models.Base.metadata.create_all(bind=engine)
+# Import the API router
+from app.api.v1.endpoints import items
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# This line creates the database tables if they don't exist
+# It uses the engine and looks for all classes that inherit from Base
+Base.metadata.create_all(bind=engine)
 
-@app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_user(db=db, user=user)
+# Create the FastAPI app instance
+app = FastAPI(title="My Todo API")
 
-@app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+
+@app.get("/")
+def read_root():
+    """
+    A simple root endpoint to confirm the API is running.
+    """
+    return {"status": "ok", "message": "Welcome to the Todo API!"}
+
+
+# Include the items router in our main app
+app.include_router(items.router, prefix="/api/v1/items", tags=["items"])

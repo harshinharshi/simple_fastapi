@@ -1,24 +1,22 @@
-# simple_fastapi
-a project to learn how docker works
+The Project Structure Explained
+/myproject: This is the main container for our entire project.
 
+requirements.txt: This file lists all the Python packages our project needs to run (like FastAPI, Uvicorn, etc.). It's like a recipe's ingredient list.
 
-neccesary knowlage of UV :
-$ pip install uv
+/app: This is the heart of our application. All our actual Python code will live inside this directory.
 
-check if it is working 
-$ uv
+Let's look inside the /app directory:
 
-$ uv init
+/api: This is where we define the API endpoints (the URLs, like /todos/ or /users/). It handles incoming web requests and sends back responses.
 
-uv init will crate readme.md, main.py, pyproject.toml, .python-version, .gitignore (if any of the file is present it will skip that file from creation )
+/core: This holds our project's configuration, like database connection details or secret keys.
 
-$ uv run main.py 
+/db: This is where we'll put the logic for connecting to our PostgreSQL database.
 
-uv run wll crate .venv folder and uv.lock file
+/models: This directory will contain our database table structures, defined as Python classes.
 
-$ uv add requests 
+/schemas: This holds our data validation models (using Pydantic). It defines what the data should look like when it comes into and goes out of our API.
 
-this will add the dependencies to the pyproject.toml file
+main.py: This is the entry point that starts our entire FastAPI application. It ties everything together.
 
-To remove a package, you can use uv remove:
-$ uv remove requests
+This separation makes our code clean, easy to test, and ready to grow.
